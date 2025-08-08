@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>โปรแกรมบวกเวลา</title>
+<style>
+  body { font-family: sans-serif; max-width: 400px; margin: auto; padding: 20px; }
+  label { display: block; margin-top: 10px; }
+  input, select { width: 100%; padding: 5px; font-size: 16px; }
+  #result { font-weight: bold; color: darkblue; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<h2>โปรแกรมบวกเวลา</h2>
+
+<label>เวลาเริ่มต้น:</label>
+<input type="time" id="startTime" value="08:30">
+
+<label>เพิ่มเวลา:</label>
+<select id="addHours">
+</select>
+
+<label>เวลาผลลัพธ์:</label>
+<div id="result">--:--</div>
+
+<script>
+// สร้างรายการดรอปดาว 1 ชม. ถึง 5 ชม. เพิ่มทีละครึ่งชั่วโมง
+const select = document.getElementById("addHours");
+for (let h = 1; h <= 5; h += 0.5) {
+    let hours = Math.floor(h);
+    let minutes = (h % 1) * 60;
+    let label = `${hours > 0 ? hours : ''}${hours > 0 ? ' ชม.' : ''}${minutes > 0 ? (hours > 0 ? ' ' : '') + minutes + ' นาที' : ''}`;
+    let option = document.createElement("option");
+    option.value = h; // เก็บค่าเป็นชั่วโมงทศนิยม
+    option.textContent = label.trim();
+    select.appendChild(option);
+}
+
+function calculateTime() {
+    const startValue = document.getElementById("startTime").value;
+    const addValue = parseFloat(document.getElementById("addHours").value);
+    if (!startValue) return;
+
+    let [startH, startM] = startValue.split(":").map(Number);
+    let addMinutes = Math.round(addValue * 60);
+
+    let totalMinutes = startH * 60 + startM + addMinutes;
+    totalMinutes %= (24 * 60); // ให้เวลาอยู่ใน 24 ชม.
+
+    let resultH = String(Math.floor(totalMinutes / 60)).padStart(2, '0');
+    let resultM = String(totalMinutes % 60).padStart(2, '0');
+
+    document.getElementById("result").textContent = `${resultH}:${resultM}`;
+}
+
+// อัปเดตอัตโนมัติ
+document.getElementById("startTime").addEventListener("input", calculateTime);
+document.getElementById("addHours").addEventListener("change", calculateTime);
+
+// ค่าเริ่มต้น
+calculateTime();
+</script>
+
+</body>
+</html>
